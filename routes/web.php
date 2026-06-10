@@ -13,14 +13,20 @@ use Illuminate\Support\Facades\Route;
 // ── Página de inicio ─────────────────────────────────────────
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // ── Autenticación ────────────────────────────────────────────
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/registro', [AuthController::class, 'showRegistro'])->name('registro');
-Route::post('/registro', [AuthController::class, 'registro']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/login',    [AuthController::class, 'showLogin'])
+    ->name('login');
+Route::post('/login',   [AuthController::class, 'login']);
+Route::get('/registro', [AuthController::class, 'showRegistro'])
+    ->name('registro');
+Route::post('/registro',[AuthController::class, 'registro']);
+Route::post('/logout',  [AuthController::class, 'logout'])->name('logout');
+
+// Aliases para welcome.blade.php
+Route::get('/iniciar-sesion', [AuthController::class, 'showLogin'])->name('cliente.login');
+Route::get('/crear-cuenta',   [AuthController::class, 'showRegistro'])->name('cliente.registro');
 
 // ── Habitaciones (público) ───────────────────────────────────
 Route::get('/habitaciones', [HabitacionController::class, 'index'])->name('habitaciones.index');

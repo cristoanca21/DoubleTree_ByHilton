@@ -53,6 +53,7 @@ class AuthController extends Controller
             'apellido'      => 'required|string|max:100',
             'email'         => 'required|email|unique:clientes,email',
             'password'      => 'required|min:8|confirmed',
+            'tipo_documento'  => 'required|string|max:20',
             'dni'           => 'required|string|max:20',
             'nacionalidad'  => 'required|string|max:100',
         ]);
@@ -62,6 +63,7 @@ class AuthController extends Controller
             'apellido'     => $request->apellido,
             'email'        => $request->email,
             'password'     => Hash::make($request->password),
+            'tipo_documento' => $request->tipo_documento,
             'dni'          => $request->dni,
             'nacionalidad' => $request->nacionalidad,
             'rol'          => 'cliente',
