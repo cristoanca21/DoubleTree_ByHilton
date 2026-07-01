@@ -18,8 +18,7 @@
             Descubre el confort<br>que mereces
         </h1>
         <p class="text-gray-300 text-lg mb-6 max-w-xl">
-            147 habitaciones diseñadas para ofrecerte la mejor experiencia en Trujillo.
-            Vista a la ciudad, al mar y suites de lujo en el piso 14.
+            Descubra la calidez de nuestra hospitalidad en la Ciudad de la Eterna Primavera.
         </p>
         <a href="#buscador"
            class="inline-flex items-center gap-2 bg-doubletree-gold text-white px-6 py-3 rounded-xl font-medium hover:bg-yellow-600 transition w-fit">

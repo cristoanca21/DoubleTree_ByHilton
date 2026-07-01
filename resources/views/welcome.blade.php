@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>DoubleTree by Hilton Trujillo — Hotel de Lujo en el Norte del Perú</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ time() }}">
 
-    {{-- Tailwind CSS CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
-    {{-- Google Fonts: Cormorant Garamond + Inter --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    {{-- FontAwesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <script>
@@ -38,23 +36,45 @@
             }
         }
     </script>
-
     <style>
-        /* ── Global ── */
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background: #F8F5EF; color: #1A3A5C; }
 
-        /* ── Hero ── */
+        /* ══════════════════════════════════════════
+           HERO — contraste reforzado para que el
+           texto siempre sea legible sobre la imagen.
+           ::before es una capa de oscurecimiento
+           independiente de la foto.
+        ══════════════════════════════════════════ */
         .hero-bg {
+            position: relative;
             background-image:
-                linear-gradient(to bottom, rgba(13,33,55,0.55) 0%, rgba(13,33,55,0.35) 50%, rgba(13,33,55,0.72) 100%),
-                url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=85');
+                url('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/68/c1/e5/caption.jpg?w=1400&h=-1&s=1');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to bottom,
+                    rgba(8,18,32,0.72) 0%,
+                    rgba(8,18,32,0.58) 30%,
+                    rgba(8,18,32,0.66) 60%,
+                    rgba(8,18,32,0.88) 100%),
+                radial-gradient(ellipse at center,
+                    rgba(8,18,32,0.25) 0%,
+                    rgba(8,18,32,0.55) 75%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-bg > * {
+            position: relative;
+            z-index: 2;
+        }
 
-        /* ── Gold ornamental divider ── */
         .divider-gold {
             display: flex;
             align-items: center;
@@ -69,7 +89,6 @@
             opacity: 0.45;
         }
 
-        /* ── Availability bar ── */
         .avail-bar {
             background: rgba(255,255,255,0.97);
             backdrop-filter: blur(8px);
@@ -89,7 +108,6 @@
             box-shadow: 0 0 0 3px rgba(26,58,92,0.12);
         }
 
-        /* ── Room cards ── */
         .room-card {
             transition: transform 0.35s ease, box-shadow 0.35s ease;
             overflow: hidden;
@@ -105,7 +123,6 @@
             transform: scale(1.04);
         }
 
-        /* ── Nav ── */
         .nav-transparent { background: transparent; }
         .nav-solid {
             background: rgba(13,33,55,0.97);
@@ -113,12 +130,10 @@
             box-shadow: 0 2px 20px rgba(0,0,0,0.25);
         }
 
-        /* ── Testimonial ── */
         .testimonial-card {
             border-left: 3px solid #C9AA71;
         }
 
-        /* ── Animations ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(28px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -129,100 +144,18 @@
         .delay-3 { animation-delay: 0.45s; opacity: 0; }
         .delay-4 { animation-delay: 0.60s; opacity: 0; }
 
-        /* ── Scroll-reveal utility ── */
         .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
 
-        /* ── Footer ── */
         footer a:hover { color: #C9AA71; }
     </style>
 </head>
 <body class="antialiased">
 
-{{-- ═══════════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════════ --}}
-<nav id="navbar" class="nav-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-500">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+<x-navbar :transparent="true" />
 
-            {{-- Logo --}}
-            <a href="{{ route('welcome') }}" class="flex flex-col leading-none">
-                <span class="font-serif text-white text-xs tracking-widest2 uppercase opacity-80">DoubleTree by</span>
-                <span class="font-serif text-white text-xl font-light tracking-wide">Hilton Trujillo</span>
-                <span class="text-gold text-[10px] tracking-widest3 uppercase mt-0.5">Hotel & Suites</span>
-            </a>
-
-            {{-- Links (desktop) --}}
-            <div class="hidden lg:flex items-center gap-8">
-                <a href="#habitaciones" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200">Habitaciones</a>
-                <a href="#experiencias" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200">Experiencias</a>
-                <a href="#nosotros" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200">El Hotel</a>
-                <a href="#contacto" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200">Contacto</a>
-            </div>
-
-            {{-- Auth actions --}}
-            <div class="flex items-center gap-3">
-                @guest('cliente')
-                    <a href="{{ route('cliente.login') }}"
-                       class="text-white/85 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200 hidden sm:block">
-                        Iniciar Sesión
-                    </a>
-                    <a href="{{ route('cliente.registro') }}"
-                       class="bg-gold hover:bg-gold-dark text-navy-deep text-xs tracking-widest uppercase font-semibold px-5 py-2.5 transition-all duration-200 hover:shadow-lg">
-                        Reservar
-                    </a>
-                @else
-                    <div class="flex items-center gap-3">
-                        @if(auth('cliente')->user()->rol === 'admin')
-                            <a href="{{ route('admin.dashboard') }}"
-                               class="text-white/80 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200">
-                                <i class="fas fa-cog mr-1.5 text-gold/70"></i>Admin
-                            </a>
-                        @endif
-                        <a href="{{ route('cliente.dashboard') }}"
-                           class="text-white/85 hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200 hidden sm:block">
-                            <i class="fas fa-user-circle mr-1.5"></i>{{ auth('cliente')->user()->nombre }}
-                        </a>
-                        <form method="POST" action="{{ route('cliente.logout') }}" class="inline">
-                            @csrf
-                            <button type="submit"
-                                    class="bg-gold hover:bg-gold-dark text-navy-deep text-xs tracking-widest uppercase font-semibold px-5 py-2.5 transition-all duration-200">
-                                Salir
-                            </button>
-                        </form>
-                    </div>
-                @endguest
-
-                {{-- Mobile menu toggle --}}
-                <button id="mobileMenuBtn" class="lg:hidden text-white/80 hover:text-gold ml-2 transition-colors">
-                    <i class="fas fa-bars text-lg"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Mobile menu --}}
-    <div id="mobileMenu" class="hidden lg:hidden bg-navy-deep/98 border-t border-gold/20">
-        <div class="px-6 py-4 flex flex-col gap-4">
-            <a href="#habitaciones" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase">Habitaciones</a>
-            <a href="#experiencias" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase">Experiencias</a>
-            <a href="#nosotros" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase">El Hotel</a>
-            <a href="#contacto" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase">Contacto</a>
-            @guest('cliente')
-                <a href="{{ route('cliente.login') }}" class="text-white/80 hover:text-gold text-xs tracking-widest uppercase">Iniciar Sesión</a>
-            @endguest
-        </div>
-    </div>
-</nav>
-
-
-{{-- ═══════════════════════════════════════════
-     HERO SECTION
-═══════════════════════════════════════════ --}}
 <section class="hero-bg relative min-h-screen flex flex-col">
 
-    {{-- Hero copy --}}
     <div class="flex-1 flex items-center justify-center text-center px-6 pt-32 pb-56">
         <div class="max-w-3xl">
             <p class="fade-up text-gold text-xs tracking-widest3 uppercase mb-4 font-medium">
@@ -233,8 +166,7 @@
                 <span class="block text-5xl sm:text-7xl lg:text-8xl italic text-gold">Extraordinaria</span>
             </h1>
             <p class="fade-up delay-2 text-white/70 text-base sm:text-lg font-light mt-7 leading-relaxed max-w-xl mx-auto">
-                Descubra el arte de la hospitalidad en el corazón del norte peruano. 147 habitaciones
-                diseñadas para quienes exigen lo mejor.
+                Un refugio de confort internacional pensado exclusivamente para su bienestar.
             </p>
             <div class="fade-up delay-3 flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
                 <a href="#disponibilidad"
@@ -249,14 +181,13 @@
         </div>
     </div>
 
-    {{-- Stats bar --}}
     <div class="fade-up delay-4 absolute bottom-36 left-0 right-0 hidden lg:block">
         <div class="max-w-4xl mx-auto px-6">
             <div class="grid grid-cols-4 divide-x divide-white/20">
                 @foreach([
-                    ['147', 'Habitaciones'],
-                    ['14',  'Pisos'],
-                    ['24/7','Servicio'],
+                    ['1', 'ROOFTOP'],
+                    ['1',  'Bar'],
+                    ['24/7','Room Service'],
                     ['★ 5', 'Estrellas']
                 ] as $stat)
                 <div class="text-center px-6 py-3">
@@ -268,7 +199,6 @@
         </div>
     </div>
 
-    {{-- Scroll cue --}}
     <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
         <span class="text-white text-[10px] tracking-widest uppercase">Deslizar</span>
         <div class="w-px h-8 bg-gold/60 animate-bounce"></div>
@@ -276,9 +206,6 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     AVAILABILITY SEARCH BAR
-═══════════════════════════════════════════ --}}
 <div id="disponibilidad" class="avail-bar sticky top-0 z-40 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <form action="{{ route('habitaciones.index') }}" method="GET"
@@ -286,7 +213,6 @@
 
             <div class="w-full lg:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
-                {{-- Check-in --}}
                 <div class="flex flex-col">
                     <label class="text-[10px] tracking-widest uppercase text-navy/60 font-medium mb-1 ml-1">Check-in</label>
                     <input type="date" name="checkin"
@@ -295,7 +221,6 @@
                            class="avail-input rounded px-3 py-2.5">
                 </div>
 
-                {{-- Check-out --}}
                 <div class="flex flex-col">
                     <label class="text-[10px] tracking-widest uppercase text-navy/60 font-medium mb-1 ml-1">Check-out</label>
                     <input type="date" name="checkout"
@@ -304,7 +229,6 @@
                            class="avail-input rounded px-3 py-2.5">
                 </div>
 
-                {{-- Tipo habitación --}}
                 <div class="flex flex-col">
                     <label class="text-[10px] tracking-widest uppercase text-navy/60 font-medium mb-1 ml-1">Tipo de Habitación</label>
                     <select name="tipo_habitacion" class="avail-input rounded px-3 py-2.5">
@@ -315,7 +239,6 @@
                     </select>
                 </div>
 
-                {{-- Huéspedes --}}
                 <div class="flex flex-col">
                     <label class="text-[10px] tracking-widest uppercase text-navy/60 font-medium mb-1 ml-1">Huéspedes</label>
                     <select name="huespedes" class="avail-input rounded px-3 py-2.5">
@@ -336,13 +259,9 @@
 </div>
 
 
-{{-- ═══════════════════════════════════════════
-     ROOMS SECTION
-═══════════════════════════════════════════ --}}
 <section id="habitaciones" class="bg-ivory py-24 lg:py-32">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
-        {{-- Section header --}}
         <div class="text-center mb-16 reveal">
             <p class="text-gold text-[10px] tracking-widest3 uppercase font-medium mb-3">Acomodaciones</p>
             <h2 class="font-serif text-navy text-4xl sm:text-5xl font-light">Nuestras Habitaciones</h2>
@@ -355,10 +274,8 @@
             </p>
         </div>
 
-        {{-- Room cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            {{-- Matrimonial --}}
             <div class="room-card bg-white reveal">
                 <div class="overflow-hidden h-64">
                     <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80"
@@ -392,7 +309,6 @@
                 </div>
             </div>
 
-            {{-- Doble — highlighted --}}
             <div class="room-card bg-navy reveal" style="transition-delay: 0.1s;">
                 <div class="overflow-hidden h-64 relative">
                     <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80"
@@ -429,10 +345,9 @@
                 </div>
             </div>
 
-            {{-- Suite --}}
             <div class="room-card bg-white reveal" style="transition-delay: 0.2s;">
                 <div class="overflow-hidden h-64">
-                    <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80"
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/77/bd/d9/caption.jpg?w=1400&h=-1&s=1"
                          alt="Suite"
                          class="w-full h-full object-cover">
                 </div>
@@ -464,7 +379,6 @@
             </div>
         </div>
 
-        {{-- CTA --}}
         <div class="text-center mt-12 reveal">
             <a href="{{ route('habitaciones.index') }}"
                class="inline-block text-navy border-b border-gold hover:text-gold text-xs tracking-widest uppercase transition-colors duration-200 pb-0.5">
@@ -475,9 +389,6 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     EXPERIENCES / AMENITIES SECTION
-═══════════════════════════════════════════ --}}
 <section id="experiencias" class="bg-navy-deep py-24 lg:py-32">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
@@ -509,23 +420,17 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     LOCATION SECTION
-═══════════════════════════════════════════ --}}
 <section id="nosotros" class="bg-ivory-warm py-24 lg:py-32">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-            {{-- Image collage --}}
             <div class="relative reveal">
-                <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=800&q=80"
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/77/bd/ed/caption.jpg?w=1400&h=-1&s=1"
                      alt="DoubleTree Trujillo exterior"
                      class="w-full h-80 lg:h-96 object-cover">
-                <div class="absolute -bottom-6 -right-6 w-40 h-40 bg-gold/15 border-4 border-gold/30 hidden lg:block"></div>
                 <div class="absolute -top-4 -left-4 w-24 h-24 bg-navy/10 hidden lg:block"></div>
             </div>
 
-            {{-- Copy --}}
             <div class="reveal" style="transition-delay: 0.15s;">
                 <p class="text-gold text-[10px] tracking-widest3 uppercase font-medium mb-3">Nuestra Historia</p>
                 <h2 class="font-serif text-navy text-3xl sm:text-4xl font-light leading-tight mb-6">
@@ -544,10 +449,10 @@
 
                 <div class="grid grid-cols-2 gap-6 mb-8">
                     @foreach([
-                        ['Chan Chan', '8 min', 'fa-landmark'],
-                        ['Huanchaco', '25 min', 'fa-umbrella-beach'],
-                        ['Aeropuerto', '15 min', 'fa-plane'],
-                        ['Centro Histórico', '5 min', 'fa-map-marker-alt'],
+                        ['Chan Chan', '15 min', 'fa-landmark'],
+                        ['Huanchaco', '30 min', 'fa-umbrella-beach'],
+                        ['Aeropuerto', '25 min', 'fa-plane'],
+                        ['Centro Histórico', '10 min', 'fa-map-marker-alt'],
                     ] as [$place, $time, $icon])
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-gold/15 flex items-center justify-center flex-shrink-0">
@@ -571,9 +476,6 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     TESTIMONIALS
-═══════════════════════════════════════════ --}}
 <section class="bg-white py-20">
     <div class="max-w-5xl mx-auto px-6 lg:px-8">
         <div class="text-center mb-12 reveal">
@@ -607,9 +509,6 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     BOOKING CTA BANNER
-═══════════════════════════════════════════ --}}
 <section class="bg-gold py-16">
     <div class="max-w-4xl mx-auto px-6 text-center reveal">
         <p class="text-navy-deep/70 text-[10px] tracking-widest3 uppercase mb-3 font-medium">Oferta Exclusiva</p>
@@ -625,7 +524,7 @@
                 Reservar Ahora
             </a>
             @guest('cliente')
-            <a href="{{ route('cliente.registro') }}"
+            <a href="{{ route('registro') }}"
                class="border-2 border-navy-deep text-navy-deep hover:bg-navy-deep hover:text-white text-xs tracking-widest uppercase px-10 py-4 transition-all duration-200 w-full sm:w-auto text-center">
                 Crear Cuenta
             </a>
@@ -635,14 +534,10 @@
 </section>
 
 
-{{-- ═══════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════ --}}
 <footer id="contacto" class="bg-navy-deep text-white/70">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
-            {{-- Brand --}}
             <div>
                 <div class="mb-5">
                     <p class="font-serif text-white/50 text-xs tracking-widest2 uppercase mb-0.5">DoubleTree by</p>
@@ -653,15 +548,18 @@
                     La referencia de hospitalidad de lujo en el norte del Perú desde nuestra apertura.
                 </p>
                 <div class="flex gap-3">
-                    @foreach(['fa-instagram','fa-facebook-f','fa-twitter','fa-tripadvisor'] as $social)
-                    <a href="#" class="w-8 h-8 border border-white/20 hover:border-gold flex items-center justify-center text-xs transition-all duration-200">
-                        <i class="fab {{ $social }}"></i>
+                    @foreach([
+                        ['fa-instagram', 'https://www.instagram.com/doubletree.hiltontrujillo/'],
+                        ['fa-facebook-f', 'https://www.facebook.com/share/18cGj7CrYH/'],
+                        ['fa-twitter', 'https://x.com/DoubleTree'],
+                    ] as $social)
+                    <a href="{{ $social[1] }}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 border border-white/20 hover:border-gold flex items-center justify-center text-xs transition-all duration-200">
+                        <i class="fab {{ $social[0] }}"></i>
                     </a>
                     @endforeach
                 </div>
             </div>
 
-            {{-- Links --}}
             <div>
                 <h4 class="text-white text-[10px] tracking-widest uppercase font-medium mb-5">Navegación</h4>
                 <ul class="space-y-2.5 text-sm">
@@ -677,21 +575,20 @@
                 </ul>
             </div>
 
-            {{-- Contact --}}
             <div>
                 <h4 class="text-white text-[10px] tracking-widest uppercase font-medium mb-5">Contacto</h4>
                 <ul class="space-y-3 text-sm">
                     <li class="flex items-start gap-2.5">
                         <i class="fas fa-map-marker-alt text-gold text-xs mt-1 flex-shrink-0"></i>
-                        <span>Av. El Golf 591, Trujillo 13009<br>La Libertad, Perú</span>
+                        <span> Av. El Golf 591, Trujillo 13009<br>La Libertad, Perú</span>
                     </li>
                     <li class="flex items-center gap-2.5">
                         <i class="fas fa-phone text-gold text-xs flex-shrink-0"></i>
-                        <a href="tel:+5144123456" class="hover:text-gold transition-colors">(044) 123-456</a>
+                        <a href="tel:+5144240387" class="hover:text-gold transition-colors">(044) 240387</a>
                     </li>
                     <li class="flex items-center gap-2.5">
                         <i class="fas fa-envelope text-gold text-xs flex-shrink-0"></i>
-                        <a href="mailto:reservas@doubletreetrujillo.com" class="hover:text-gold transition-colors text-xs">reservas@doubletreetrujillo.com</a>
+                        <a href="mailto:[EMAIL_ADDRESS]" class="hover:text-gold transition-colors text-xs">TRUEE_GM@hilton.com</a>
                     </li>
                     <li class="flex items-center gap-2.5">
                         <i class="fas fa-clock text-gold text-xs flex-shrink-0"></i>
@@ -700,7 +597,6 @@
                 </ul>
             </div>
 
-            {{-- Newsletter --}}
             <div>
                 <h4 class="text-white text-[10px] tracking-widest uppercase font-medium mb-5">Ofertas Exclusivas</h4>
                 <p class="text-sm text-white/50 mb-4">Suscríbase para recibir tarifas especiales y novedades del hotel.</p>
@@ -716,7 +612,6 @@
 
         </div>
 
-        {{-- Bottom bar --}}
         <div class="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/35">
             <span>© {{ date('Y') }} DoubleTree by Hilton Trujillo. Todos los derechos reservados.</span>
             <div class="flex items-center gap-4">
@@ -724,40 +619,21 @@
                 <span>·</span>
                 <a href="#" class="hover:text-gold transition-colors">Términos de Uso</a>
                 <span>·</span>
-                <div class="flex items-center gap-1.5">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
-                         alt="Visa" class="h-4 opacity-40">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                         alt="Mastercard" class="h-4 opacity-40">
-                </div>
+                <div class="flex items-center gap-3 text-white/50">
+    <span class="hover:text-gold transition-colors duration-200 cursor-pointer text-2xl" title="Visa">
+        <i class="fab fa-cc-visa"></i>
+    </span>
+    <span class="hover:text-gold transition-colors duration-200 cursor-pointer text-2xl" title="Mastercard">
+        <i class="fab fa-cc-mastercard"></i>
+    </span>
+</div>
             </div>
         </div>
     </div>
 </footer>
 
 
-{{-- ═══════════════════════════════════════════
-     SCRIPTS
-═══════════════════════════════════════════ --}}
 <script>
-/* ── Navbar scroll effect ── */
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 80) {
-        navbar.classList.remove('nav-transparent');
-        navbar.classList.add('nav-solid');
-    } else {
-        navbar.classList.add('nav-transparent');
-        navbar.classList.remove('nav-solid');
-    }
-}, { passive: true });
-
-/* ── Mobile menu ── */
-document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-    document.getElementById('mobileMenu').classList.toggle('hidden');
-});
-
-/* ── Scroll reveal ── */
 const revealEls = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(el => {
@@ -769,7 +645,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
 revealEls.forEach(el => observer.observe(el));
 
-/* ── Checkout date auto-advance when checkin changes ── */
 const checkinInput  = document.querySelector('input[name="checkin"]');
 const checkoutInput = document.querySelector('input[name="checkout"]');
 if (checkinInput && checkoutInput) {
@@ -783,5 +658,6 @@ if (checkinInput && checkoutInput) {
 }
 </script>
 
+@stack('scripts')
 </body>
 </html>

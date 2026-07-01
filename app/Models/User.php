@@ -22,6 +22,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'telefono',
+        'nacionalidad',
+        'tipo_documento',
+        'dni',
+        'rol'
     ];
 
     /**
@@ -33,6 +38,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function esAdmin(): bool
+    {
+        return $this->rol === 'admin';
+    }
 
     /**
      * Get the attributes that should be cast.

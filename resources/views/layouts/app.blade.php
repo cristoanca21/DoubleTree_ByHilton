@@ -5,138 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DoubleTree by Hilton Trujillo')</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ time() }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        .doubletree-gold { color: #C9AA71; }
-        .bg-doubletree-gold { background-color: #C9AA71; }
-        .bg-doubletree-navy { background-color: #1A3A5C; }
-        .border-doubletree-gold { border-color: #C9AA71; }
-        .hover\:bg-doubletree-gold:hover { background-color: #B8974F; }
-    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy:  { DEFAULT: '#1A3A5C', deep: '#0D2137', light: '#2A5080' },
+                        gold:  { DEFAULT: '#C9AA71', light: '#D9C08F', dark: '#A8864A', pale: '#F2E8D0' },
+                        ivory: { DEFAULT: '#F8F5EF', warm: '#F0EBE0' },
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans:  ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        widest2: '0.25em',
+                        widest3: '0.35em',
+                    },
+                }
+            }
+        }
+    </script>
+
+    {{-- Estilos extra por vista --}}
+    @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="antialiased bg-ivory" style="font-family:'Inter',sans-serif">
 
-{{-- NAVBAR --}}
-<nav class="bg-doubletree-navy shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <a href="{{ route('habitaciones.index') }}" class="flex items-center gap-3">
-                <span class="text-white font-bold text-xl tracking-wide">DoubleTree</span>
-                <span class="doubletree-gold font-light text-sm">by Hilton Trujillo</span>
-            </a>
-            <div class="flex items-center gap-4">
-                <a href="{{ route('habitaciones.index') }}"
-                   class="text-gray-300 hover:text-white text-sm transition">
-                    Habitaciones
-                </a>
-                @auth('cliente')
-                    <a href="{{ route('reservas.index') }}"
-                       class="text-gray-300 hover:text-white text-sm transition">
-                        Mis reservas
-                    </a>
-                    @if(Auth::guard('cliente')->user()->esAdmin())
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="doubletree-gold hover:text-yellow-300 text-sm transition">
-                            Panel Admin
-                        </a>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}" class="inline" id="form-logout">
-    @csrf
-    <button type="button" onclick="confirmarLogout()"
-            class="bg-doubletree-gold text-white px-4 py-2 rounded text-sm hover:bg-yellow-600 transition">
-        Cerrar sesión
-    </button>
-</form>
-
-{{-- Modal confirmación logout --}}
-<div id="modal-logout"
-     class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
-        <div class="text-center">
-            <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <i class="fa fa-right-from-bracket text-2xl text-red-500"></i>
-            </div>
-            <h3 class="text-lg font-bold text-doubletree-navy mb-2">
-                ¿Cerrar sesión?
-            </h3>
-            <p class="text-gray-500 text-sm mb-6">
-                Tu sesión actual se cerrará. ¿Estás seguro que deseas salir?
-            </p>
-            <div class="flex gap-3">
-                <button onclick="cerrarModal()"
-                        class="flex-1 bg-gray-100 text-gray-600 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition text-sm">
-                    Cancelar
-                </button>
-                <button onclick="document.getElementById('form-logout').submit()"
-                        class="flex-1 bg-red-500 text-white py-2.5 rounded-lg font-medium hover:bg-red-600 transition text-sm">
-                    Sí, cerrar sesión
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function confirmarLogout() {
-    document.getElementById('modal-logout').classList.remove('hidden');
-}
-function cerrarModal() {
-    document.getElementById('modal-logout').classList.add('hidden');
-}
-// Cerrar con Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') cerrarModal();
-});
-// Cerrar click fuera del modal
-document.getElementById('modal-logout').addEventListener('click', function(e) {
-    if (e.target === this) cerrarModal();
-});
-</script>
-                @else
-                    <a href="{{ route('login') }}"
-                       class="text-gray-300 hover:text-white text-sm transition">
-                        Iniciar sesión
-                    </a>
-                    <a href="{{ route('registro') }}"
-                       class="bg-doubletree-gold text-white px-4 py-2 rounded text-sm hover:bg-doubletree-gold transition">
-                        Registrarse
-                    </a>
-                @endauth
-            </div>
-        </div>
-    </div>
-</nav>
-
-{{-- ALERTAS --}}
-<div class="max-w-7xl mx-auto px-4 pt-4 w-full">
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded mb-4">
-            <i class="fa fa-check-circle mr-2"></i>{{ session('success') }}
-        </div>
+    {{-- ══ NAVBAR COMPARTIDO ══ --}}
+    {{--
+        transparent=true  → solo para welcome (hero de fondo)
+        transparent=false → fijo navy para todas las demás vistas
+        Cada vista puede sobreescribir con @section('navbar') si necesita algo especial
+    --}}
+    @hasSection('navbar')
+        @yield('navbar')
+    @else
+        <x-navbar :transparent="false" />
+        {{-- Spacer para compensar navbar fijo de 72px --}}
+        <div style="height:72px"></div>
     @endif
-    @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded mb-4">
-            <i class="fa fa-exclamation-circle mr-2"></i>
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+
+    {{-- ══ CONTENIDO PRINCIPAL ══ --}}
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- ══ FOOTER COMPARTIDO ══ --}}
+    <footer style="background:#0D2137;color:rgba(255,255,255,.65)">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+
+                {{-- Brand --}}
+                <div>
+                    <div style="font-family:'Cormorant Garamond',serif;color:rgba(255,255,255,.45);font-size:9px;letter-spacing:.22em;text-transform:uppercase">DoubleTree by</div>
+                    <div style="font-family:'Cormorant Garamond',serif;color:#fff;font-size:20px;font-weight:300">Hilton Trujillo</div>
+                    <div style="color:#C9AA71;font-size:8px;letter-spacing:.3em;text-transform:uppercase;margin-top:2px">Hotel & Suites</div>
+                    <p style="font-size:11px;color:rgba(255,255,255,.4);margin-top:12px;line-height:1.7">
+                        La referencia de hospitalidad de lujo en el norte del Perú.
+                    </p>
+                </div>
+
+                {{-- Links --}}
+                <div>
+                    <div style="color:#fff;font-size:8px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;margin-bottom:14px">Navegación</div>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+                        <li><a href="{{ route('habitaciones.index') }}" style="color:rgba(255,255,255,.5);font-size:12px;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#C9AA71'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Habitaciones</a></li>
+                        <li><a href="{{ route('welcome') }}#experiencias" style="color:rgba(255,255,255,.5);font-size:12px;text-decoration:none" onmouseover="this.style.color='#C9AA71'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Experiencias</a></li>
+                        <li><a href="{{ route('welcome') }}#nosotros" style="color:rgba(255,255,255,.5);font-size:12px;text-decoration:none" onmouseover="this.style.color='#C9AA71'" onmouseout="this.style.color='rgba(255,255,255,.5)'">El Hotel</a></li>
+                        @guest('cliente')
+                        <li><a href="{{ route('login') }}" style="color:rgba(255,255,255,.5);font-size:12px;text-decoration:none" onmouseover="this.style.color='#C9AA71'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Iniciar Sesión</a></li>
+                        <li><a href="{{ route('registro') }}" style="color:rgba(255,255,255,.5);font-size:12px;text-decoration:none" onmouseover="this.style.color='#C9AA71'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Crear Cuenta</a></li>
+                        @endguest
+                    </ul>
+                </div>
+
+                {{-- Contact --}}
+                <div>
+                    <div style="color:#fff;font-size:8px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;margin-bottom:14px">Contacto</div>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
+                        <li style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(255,255,255,.5)">
+                            <i class="fas fa-map-marker-alt" style="color:#C9AA71;margin-top:2px;flex-shrink:0"></i>
+                            <span>Av. El Golf 591, Trujillo 13009<br>La Libertad, Perú</span>
+                        </li>
+                        <li style="display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.5)">
+                            <i class="fas fa-phone" style="color:#C9AA71;flex-shrink:0"></i>
+                            <span>(044) 123-456</span>
+                        </li>
+                        <li style="display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.5)">
+                            <i class="fas fa-envelope" style="color:#C9AA71;flex-shrink:0"></i>
+                            <span>reservas@doubletreetrujillo.com</span>
+                        </li>
+                        <li style="display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.5)">
+                            <i class="fas fa-clock" style="color:#C9AA71;flex-shrink:0"></i>
+                            <span>Recepción 24 horas</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
+                <span style="font-size:10px;color:rgba(255,255,255,.25)">
+                    © {{ date('Y') }} DoubleTree by Hilton Trujillo. Todos los derechos reservados.
+                </span>
+                <div style="display:flex;gap:14px;align-items:center">
+                    <a href="#" style="font-size:10px;color:rgba(255,255,255,.25);text-decoration:none">Privacidad</a>
+                    <span style="color:rgba(255,255,255,.12)">·</span>
+                    <a href="#" style="font-size:10px;color:rgba(255,255,255,.25);text-decoration:none">Términos</a>
+                </div>
+            </div>
         </div>
-    @endif
-</div>
+    </footer>
 
-{{-- CONTENIDO --}}
-<main class="flex-1">
-    @yield('content')
-</main>
+    {{-- Scripts del navbar (inyectado por el componente) --}}
+    @stack('scripts')
 
-{{-- FOOTER --}}
-<footer class="bg-doubletree-navy text-gray-400 text-center py-6 mt-8">
-    <p class="text-sm">© {{ date('Y') }} DoubleTree by Hilton Trujillo. Todos los derechos reservados.</p>
-    <p class="text-xs mt-1 doubletree-gold">Av. El Golf 591, Trujillo, Perú</p>
-</footer>
+    {{-- Scripts extra por vista --}}
+    @stack('page-scripts')
 
 </body>
 </html>
