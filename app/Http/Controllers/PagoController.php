@@ -76,79 +76,82 @@ class PagoController extends Controller
                 ->withErrors(['error' => 'Error al conectar con MercadoPago. Intenta nuevamente.']);
         }
     }
-
     public function webhook(Request $request)
-    {
-        Log::info('=== WEBHOOK MP RECIBIDO ===', $request->all());
+{
+    Log::info('=== WEBHOOK MP RECIBIDO ===', $request->all());
 
-        $tipo      = $request->input('type');
-        $paymentId = $request->input('data.id');
+    $tipo      = $request->input('type');
+    $paymentId = $request->input('data.id');
 
-        Log::info("Tipo: {$tipo} | PaymentId: {$paymentId}");
+    Log::info("Tipo: {$tipo} | PaymentId: {$paymentId}");
 
-        if ($tipo !== 'payment' || !$paymentId) {
-            Log::info('Webhook ignorado - tipo no es payment');
+    if ($tipo !== 'payment' || !$paymentId) {
+        Log::info('Webhook ignorado - tipo no es payment');
+        return response()->json(['ok' => true]);
+    }
+
+    try {
+        MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+        $client  = new PaymentClient();
+        $payment = $client->get((int) $paymentId);
+
+        // Acceder a los datos como array
+        $paymentData  = json_decode(json_encode($payment), true);
+        $preferenceId = $paymentData['preference_id'] ?? null;
+        $status       = $paymentData['status'] ?? 'rejected';
+        $externalRef  = $paymentData['external_reference'] ?? null;
+
+        Log::info('Payment data:', [
+            'status'        => $status,
+            'preference_id' => $preferenceId,
+            'external_ref'  => $externalRef,
+        ]);
+
+        // Buscar pago por preference_id
+        $pago = $preferenceId
+            ? Pago::where('mp_preference_id', $preferenceId)->first()
+            : null;
+
+        // Si no encuentra, buscar por external_reference
+        if (!$pago && $externalRef) {
+            $reserva = Reserva::find($externalRef);
+            $pago    = $reserva?->pago;
+        }
+
+        if (!$pago) {
+            Log::warning('Pago no encontrado. preference_id: ' . $preferenceId . ' | external_ref: ' . $externalRef);
             return response()->json(['ok' => true]);
         }
 
-        try {
-            MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
-            $client  = new PaymentClient();
-            $payment = $client->get((int) $paymentId);
+        $estadoPago = match($status) {
+            'approved' => 'aprobado',
+            'rejected' => 'rechazado',
+            default    => 'pendiente',
+        };
 
-            Log::info('Payment de MP:', [
-                'status'        => $payment->status,
-                'preference_id' => $payment->preference_id,
-                'external_ref'  => $payment->external_reference,
-            ]);
+        Log::info("Actualizando pago #{$pago->id} a: {$estadoPago}");
 
-            $preferenceId = $payment->preference_id ?? null;
-            $status       = $payment->status ?? 'rejected';
+        $pago->update([
+            'mp_payment_id' => $paymentId,
+            'estado'        => $estadoPago,
+        ]);
 
-            // Buscar por preference_id
-            $pago = Pago::where('mp_preference_id', $preferenceId)->first();
-
-            // Si no encuentra por preference_id, buscar por external_reference
-            if (!$pago && $payment->external_reference) {
-                $reserva = Reserva::find($payment->external_reference);
-                if ($reserva) {
-                    $pago = $reserva->pago;
-                }
-            }
-
-            if (!$pago) {
-                Log::warning('Webhook MP: pago no encontrado. preference_id: ' . $preferenceId);
-                return response()->json(['ok' => true]);
-            }
-
-            $estadoPago = match($status) {
-                'approved' => 'aprobado',
-                'rejected' => 'rechazado',
-                default    => 'pendiente',
-            };
-
-            Log::info("Actualizando pago #{$pago->id} a: {$estadoPago}");
-
-            $pago->update([
-                'mp_payment_id' => $paymentId,
-                'estado'        => $estadoPago,
-            ]);
-
-            if ($estadoPago === 'aprobado') {
-                $pago->reserva->update(['estado' => 'confirmada']);
-                $this->generarComprobante($pago);
-                Log::info('✅ Reserva confirmada y comprobante generado');
-            } elseif ($estadoPago === 'rechazado') {
-                $pago->reserva->update(['estado' => 'pendiente']);
-                Log::info('❌ Pago rechazado');
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Webhook MP error: ' . $e->getMessage());
+        if ($estadoPago === 'aprobado') {
+            $pago->reserva->update(['estado' => 'confirmada']);
+            $this->generarComprobante($pago);
+            Log::info('✅ Reserva confirmada y comprobante generado');
+        } elseif ($estadoPago === 'rechazado') {
+            $pago->reserva->update(['estado' => 'pendiente']);
+            Log::info('❌ Pago rechazado');
         }
 
-        return response()->json(['ok' => true]);
+    } catch (\Exception $e) {
+        Log::error('Webhook MP error: ' . $e->getMessage());
+        Log::error($e->getTraceAsString());
     }
+
+    return response()->json(['ok' => true]);
+}
 
     public function exitoso(Request $request)
     {
