@@ -21,12 +21,10 @@ class PagoController extends Controller
 
     public function iniciar(Reserva $reserva)
     {
-        // Verificar que la reserva pertenece al cliente autenticado
         if ($reserva->cliente_id !== auth('cliente')->id()) {
             abort(403);
         }
 
-        // Si ya tiene pago pendiente, redirigir al checkout existente
         if ($reserva->pago && $reserva->pago->mp_preference_id) {
             return redirect("https://sandbox.mercadopago.com.pe/checkout/v1/redirect?pref_id={$reserva->pago->mp_preference_id}");
         }
@@ -37,10 +35,8 @@ class PagoController extends Controller
             $preference = $client->create([
                 'items' => [[
                     'id'          => 'HAB-' . $reserva->habitacion->numero,
-                    'title'       => 'Reserva — ' . $reserva->habitacion->tipo->nombre
-                                     . ' Nº ' . $reserva->habitacion->numero,
-                    'description' => 'Check-in: ' . $reserva->fecha_ingreso
-                                     . ' | Check-out: ' . $reserva->fecha_salida,
+                    'title'       => 'Reserva — ' . $reserva->habitacion->tipo->nombre . ' Nº ' . $reserva->habitacion->numero,
+                    'description' => 'Check-in: ' . $reserva->fecha_ingreso . ' | Check-out: ' . $reserva->fecha_salida,
                     'quantity'    => 1,
                     'unit_price'  => (float) $reserva->total,
                     'currency_id' => 'PEN',
@@ -50,19 +46,18 @@ class PagoController extends Controller
                     'surname' => $reserva->cliente->apellido,
                     'email'   => $reserva->cliente->email,
                 ],
-                'external_reference' => (string) $reserva->id,
-                'back_urls' => [
+                'external_reference'   => (string) $reserva->id,
+                'back_urls'            => [
                     'success' => route('pagos.exitoso'),
                     'failure' => route('pagos.fallido'),
                     'pending' => route('pagos.fallido'),
                 ],
-                'auto_approve' => true,
-                'notification_url' => url('/webhook/mp'),
+                'auto_approve'         => true,
+                'notification_url'     => 'https://doubletree-byhilton-main-3n0mhs.laravel.cloud/webhook/mp',
                 'statement_descriptor' => 'DoubleTree Trujillo',
-                'expires' => false,
+                'expires'              => false,
             ]);
 
-            // Guardar o actualizar el pago
             Pago::updateOrCreate(
                 ['reserva_id' => $reserva->id],
                 [
@@ -73,7 +68,6 @@ class PagoController extends Controller
                 ]
             );
 
-            // Redirigir al sandbox de MP
             return redirect($preference->sandbox_init_point);
 
         } catch (\Exception $e) {
@@ -85,12 +79,15 @@ class PagoController extends Controller
 
     public function webhook(Request $request)
     {
-        Log::info('Webhook MP recibido', $request->all());
+        Log::info('=== WEBHOOK MP RECIBIDO ===', $request->all());
 
         $tipo      = $request->input('type');
         $paymentId = $request->input('data.id');
 
+        Log::info("Tipo: {$tipo} | PaymentId: {$paymentId}");
+
         if ($tipo !== 'payment' || !$paymentId) {
+            Log::info('Webhook ignorado - tipo no es payment');
             return response()->json(['ok' => true]);
         }
 
@@ -99,13 +96,28 @@ class PagoController extends Controller
             $client  = new PaymentClient();
             $payment = $client->get((int) $paymentId);
 
+            Log::info('Payment de MP:', [
+                'status'        => $payment->status,
+                'preference_id' => $payment->preference_id,
+                'external_ref'  => $payment->external_reference,
+            ]);
+
             $preferenceId = $payment->preference_id ?? null;
             $status       = $payment->status ?? 'rejected';
 
+            // Buscar por preference_id
             $pago = Pago::where('mp_preference_id', $preferenceId)->first();
 
+            // Si no encuentra por preference_id, buscar por external_reference
+            if (!$pago && $payment->external_reference) {
+                $reserva = Reserva::find($payment->external_reference);
+                if ($reserva) {
+                    $pago = $reserva->pago;
+                }
+            }
+
             if (!$pago) {
-                Log::warning('Webhook MP: pago no encontrado para preference_id ' . $preferenceId);
+                Log::warning('Webhook MP: pago no encontrado. preference_id: ' . $preferenceId);
                 return response()->json(['ok' => true]);
             }
 
@@ -115,6 +127,8 @@ class PagoController extends Controller
                 default    => 'pendiente',
             };
 
+            Log::info("Actualizando pago #{$pago->id} a: {$estadoPago}");
+
             $pago->update([
                 'mp_payment_id' => $paymentId,
                 'estado'        => $estadoPago,
@@ -123,8 +137,10 @@ class PagoController extends Controller
             if ($estadoPago === 'aprobado') {
                 $pago->reserva->update(['estado' => 'confirmada']);
                 $this->generarComprobante($pago);
+                Log::info('✅ Reserva confirmada y comprobante generado');
             } elseif ($estadoPago === 'rechazado') {
                 $pago->reserva->update(['estado' => 'pendiente']);
+                Log::info('❌ Pago rechazado');
             }
 
         } catch (\Exception $e) {
@@ -143,7 +159,7 @@ class PagoController extends Controller
                 ->with('info', 'Pago procesado. Verificando estado...');
         }
 
-        $reserva = Reserva::with(['comprobante','habitacion.tipo','pago'])
+        $reserva = Reserva::with(['comprobante', 'habitacion.tipo', 'pago'])
                     ->findOrFail($reservaId);
 
         return view('pagos.exitoso', compact('reserva'));
@@ -152,16 +168,12 @@ class PagoController extends Controller
     public function fallido(Request $request)
     {
         $reservaId = $request->input('external_reference');
-        $reserva   = $reservaId
-                        ? Reserva::find($reservaId)
-                        : null;
-
+        $reserva   = $reservaId ? Reserva::find($reservaId) : null;
         return view('pagos.fallido', compact('reserva'));
     }
 
     private function generarComprobante(Pago $pago): void
     {
-        // Evitar duplicados
         if (Comprobante::where('pago_id', $pago->id)->exists()) {
             return;
         }
