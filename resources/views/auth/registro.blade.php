@@ -354,6 +354,7 @@ function updateDocLabel() {
     dni.maxLength   = cfg.max;
     dni.placeholder = cfg.ph;
     hint.textContent = cfg.hint;
+    
     // Resaltar seleccionado
     document.querySelectorAll('input[name="tipo_documento"]').forEach(r => {
         const span = r.nextElementSibling;
@@ -373,7 +374,86 @@ document.querySelectorAll('input[name="tipo_documento"]').forEach(r => {
     r.addEventListener('change', updateDocLabel);
 });
 
-document.addEventListener('DOMContentLoaded', updateDocLabel);
+// LÓGICA AGREGADA: Autocompletado de prefijo y restricción estricta de dígitos
+document.addEventListener('DOMContentLoaded', function() {
+    updateDocLabel(); // Mantiene la lógica del DNI intacta
+
+    // Diccionario con prefijos y la cantidad EXACTA/MÁXIMA de dígitos permitidos
+    const configPais = {
+        'Peruana':        { prefijo: '+51', digitos: 9 },
+        'Argentina':      { prefijo: '+54', digitos: 10 },
+        'Boliviana':      { prefijo: '+591', digitos: 8 },
+        'Brasileña':      { prefijo: '+55', digitos: 11 },
+        'Chilena':        { prefijo: '+56', digitos: 9 },
+        'Colombiana':     { prefijo: '+57', digitos: 10 },
+        'Ecuatoriana':    { prefijo: '+593', digitos: 9 },
+        'Española':       { prefijo: '+34', digitos: 9 },
+        'Estadounidense': { prefijo: '+1',  digitos: 10 },
+        'Francesa':       { prefijo: '+33', digitos: 9 },
+        'Italiana':       { prefijo: '+39', digitos: 10 },
+        'Mexicana':       { prefijo: '+52', digitos: 10 },
+        'Panameña':       { prefijo: '+507', digitos: 8 },
+        'Paraguaya':      { prefijo: '+595', digitos: 9 },
+        'Uruguaya':       { prefijo: '+598', digitos: 8 },
+        'Venezolana':     { prefijo: '+58', digitos: 10 },
+        'Otra':           { prefijo: '',    digitos: 15 } // Límite por defecto
+    };
+
+    const selectNacionalidad = document.querySelector('select[name="nacionalidad"]');
+    const inputTelefono = document.querySelector('input[name="telefono"]');
+
+    if (selectNacionalidad && inputTelefono) {
+        
+        // 1. Al cambiar de país: Actualizar prefijo y recalcular el límite
+        selectNacionalidad.addEventListener('change', function() {
+            const config = configPais[this.value] || configPais['Otra'];
+            
+            // Extraer solo los números de lo que ya estaba escrito (ignorando el prefijo anterior)
+            let numeroBase = inputTelefono.value.replace(/^\+\d+\s*/, '').replace(/\D/g, '');
+            
+            // Cortar si el número actual excede el límite del nuevo país
+            numeroBase = numeroBase.substring(0, config.digitos);
+            
+            if (config.prefijo) {
+                inputTelefono.value = `${config.prefijo} ${numeroBase}`;
+                // Fijamos el límite de caracteres del HTML (prefijo + espacio + dígitos)
+                inputTelefono.maxLength = config.prefijo.length + 1 + config.digitos;
+            } else {
+                inputTelefono.value = numeroBase;
+                inputTelefono.maxLength = config.digitos;
+            }
+        });
+
+        // 2. Al escribir en el input: Bloquear letras, símbolos y proteger el prefijo
+        inputTelefono.addEventListener('input', function(e) {
+            const config = configPais[selectNacionalidad.value] || configPais['Otra'];
+            
+            // Forzar que el prefijo siempre esté presente al inicio
+            if (config.prefijo && !this.value.startsWith(`${config.prefijo} `)) {
+                this.value = `${config.prefijo} `;
+            }
+
+            // Separar el prefijo de la parte que el usuario está escribiendo
+            let parteVariable = config.prefijo ? this.value.substring(config.prefijo.length + 1) : this.value;
+            
+            // Destruir cualquier caracter que NO sea un número (\D)
+            let soloNumeros = parteVariable.replace(/\D/g, '');
+            
+            // Evitar que sobrepasen la cantidad de dígitos permitidos
+            soloNumeros = soloNumeros.substring(0, config.digitos);
+
+            // Reconstruir el valor final del input en tiempo real
+            if (config.prefijo) {
+                this.value = `${config.prefijo} ${soloNumeros}`;
+            } else {
+                this.value = soloNumeros;
+            }
+        });
+
+        // 3. Disparar el evento change al cargar la página para setear el prefijo inicial
+        selectNacionalidad.dispatchEvent(new Event('change'));
+    }
+});
 </script>
 
 </body>

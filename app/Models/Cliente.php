@@ -29,4 +29,5 @@ class Cliente extends Authenticatable
     {
         return $this->rol === 'admin';
     }
+    
 }
