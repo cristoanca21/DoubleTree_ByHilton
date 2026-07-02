@@ -3,225 +3,307 @@
 
 @section('content')
 
-{{-- ══ HERO BANNER ══ --}}
-<div class="relative bg-doubletree-navy overflow-hidden" style="height: 420px;">
-    <div class="absolute inset-0 bg-gradient-to-r from-doubletree-navy via-doubletree-navy/80 to-transparent z-10"></div>
-    {{-- Fondo decorativo --}}
-    <div class="absolute inset-0 opacity-20"
-         style="background: repeating-linear-gradient(45deg,#C9AA71 0,#C9AA71 1px,transparent 0,transparent 50%) 0/20px 20px;">
-    </div>
-    <div class="relative z-20 max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
-        <p class="text-doubletree-gold text-sm font-medium tracking-widest uppercase mb-2">
-            4 Estrellas · Trujillo, Perú
-        </p>
-        <h1 class="text-white text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Descubre el confort<br>que mereces
+<style>
+body { background: #F8F5EF; }
+
+.hab-hero {
+    background: #1A3A5C;
+    position: relative;
+    overflow: hidden;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+}
+.hab-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg,rgba(201,170,113,.08) 0,rgba(201,170,113,.08) 1px,transparent 0,transparent 28px);
+}
+
+.hab-card {
+    background: #fff;
+    border: 1px solid rgba(201,170,113,.15);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s;
+}
+.hab-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(26,58,92,.12); }
+
+.hab-card-img {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hab-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s;
+}
+.hab-card:hover .hab-card-img img { transform: scale(1.05); }
+
+.badge-disponible {
+    position: absolute;
+    top: 10px; left: 10px;
+    font-size: .6rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase;
+    background: #22c55e; color: #fff;
+    padding: .2rem .6rem; border-radius: 20px;
+}
+.badge-piso {
+    position: absolute;
+    top: 10px; right: 10px;
+    font-size: .6rem; font-weight: 500;
+    background: rgba(0,0,0,.45); color: #fff;
+    padding: .2rem .6rem; border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+.badge-tipo {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    font-size: .6rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase;
+    background: rgba(201,170,113,.9); color: #0D2137;
+    padding: .2rem .6rem; border-radius: 20px;
+}
+
+.avail-input {
+    border: 1px solid #D9C08F;
+    background: #FAFAF8;
+    color: #1A3A5C;
+    font-size: .875rem;
+    padding: .65rem .875rem;
+    outline: none;
+    border-radius: 8px;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+    font-family: inherit;
+}
+.avail-input:focus {
+    border-color: #1A3A5C;
+    box-shadow: 0 0 0 3px rgba(26,58,92,.1);
+}
+
+.card-carrusel {
+    min-width: 260px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(201,170,113,.15);
+    background: #fff;
+    transition: transform .25s, box-shadow .25s;
+}
+.card-carrusel:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26,58,92,.1); }
+
+.section-tag {
+    font-size: .6rem; font-weight: 500; letter-spacing: .15em;
+    text-transform: uppercase; color: #C9AA71; margin-bottom: .375rem;
+}
+</style>
+
+{{-- ══ HERO ══ --}}
+<div class="hab-hero">
+    <div style="position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem; width: 100%;">
+        <div class="section-tag">Trujillo, Perú · 4 Estrellas</div>
+        <h1 style="font-family:'Cormorant Garamond',Georgia,serif; font-size: clamp(2rem,5vw,3.5rem); font-weight: 300; color: #fff; line-height: 1.15; margin: 0 0 1rem;">
+            Nuestras<br><em style="color:#C9AA71">Habitaciones</em>
         </h1>
-        <p class="text-gray-300 text-lg mb-6 max-w-xl">
-            Descubra la calidez de nuestra hospitalidad en la Ciudad de la Eterna Primavera.
+        <p style="font-size: .9375rem; color: rgba(255,255,255,.6); max-width: 480px; line-height: 1.7; margin: 0 0 1.5rem;">
+            147 habitaciones en 14 pisos diseñadas para ofrecerte descanso absoluto con los más altos estándares de confort.
         </p>
-        <a href="#buscador"
-           class="inline-flex items-center gap-2 bg-doubletree-gold text-white px-6 py-3 rounded-xl font-medium hover:bg-yellow-600 transition w-fit">
-            <i class="fa fa-search"></i> Buscar habitación
-        </a>
+        <div style="display: flex; gap: 2rem;">
+            @foreach([['147','Habitaciones'],['14','Pisos'],['3','Tipos']] as $s)
+            <div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size: 1.75rem; font-weight: 300; color: #C9AA71; line-height: 1;">{{ $s[0] }}</div>
+                <div style="font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: .2rem;">{{ $s[1] }}</div>
+            </div>
+            @endforeach
+        </div>
     </div>
 </div>
 
-{{-- ══ DESTACADOS (carrusel) ══ --}}
-<div class="bg-white py-12">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="flex items-center justify-between mb-6">
+{{-- ══ CARRUSEL DESTACADOS ══ --}}
+<div style="background: #fff; padding: 3rem 0; border-bottom: 1px solid rgba(201,170,113,.15);">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;">
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem;">
             <div>
-                <p class="text-doubletree-gold text-xs font-semibold tracking-widest uppercase">Lo mejor del hotel</p>
-                <h2 class="text-2xl font-bold text-doubletree-navy">Habitaciones destacadas</h2>
+                <div class="section-tag">Lo mejor del hotel</div>
+                <h2 style="font-family:'Cormorant Garamond',Georgia,serif; font-size: 1.75rem; font-weight: 300; color: #1A3A5C; margin: 0;">
+                    Habitaciones destacadas
+                </h2>
             </div>
-            <div class="flex gap-2">
-                <button onclick="scrollCarrusel(-1)"
-                        class="w-10 h-10 rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center justify-center">
-                    <i class="fa fa-chevron-left text-doubletree-navy text-sm"></i>
+            <div style="display: flex; gap: .5rem;">
+                <button onclick="scrollC(-1)" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(201,170,113,.4);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='#F8F5EF'" onmouseout="this.style.background='#fff'">
+                    <i class="fa fa-chevron-left" style="font-size:12px;color:#1A3A5C;"></i>
                 </button>
-                <button onclick="scrollCarrusel(1)"
-                        class="w-10 h-10 rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center justify-center">
-                    <i class="fa fa-chevron-right text-doubletree-navy text-sm"></i>
+                <button onclick="scrollC(1)" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(201,170,113,.4);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='#F8F5EF'" onmouseout="this.style.background='#fff'">
+                    <i class="fa fa-chevron-right" style="font-size:12px;color:#1A3A5C;"></i>
                 </button>
             </div>
         </div>
 
-        <div id="carrusel" class="flex gap-5 overflow-x-auto scroll-smooth pb-2"
-             style="scrollbar-width:none;">
+        <div id="carrusel" style="display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;padding-bottom:.5rem;">
+
             {{-- Matrimonial --}}
-            <div class="min-w-[280px] bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex-shrink-0">
-                <div class="bg-doubletree-navy h-44 flex items-center justify-center relative">
-                    <i class="fa fa-bed text-6xl doubletree-gold opacity-80"></i>
-                    <span class="absolute top-3 right-3 bg-doubletree-gold text-white text-xs font-bold px-2 py-1 rounded-full">
-                        Más popular
-                    </span>
+            <div class="card-carrusel">
+                <div style="height:160px;overflow:hidden;position:relative;">
+                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80"
+                         style="width:100%;height:100%;object-fit:cover;" alt="Matrimonial">
+                    <span style="position:absolute;top:8px;right:8px;font-size:.6rem;font-weight:600;background:#C9AA71;color:#0D2137;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;">Popular</span>
                 </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-doubletree-navy text-lg">Matrimonial</h3>
-                    <p class="text-gray-500 text-sm mb-3">Cama King · Vista ciudad o mar · Pisos 1-10</p>
-                    <div class="flex items-center gap-3 mb-4 text-xs text-gray-500">
-                        <span><i class="fa fa-users mr-1"></i>Hasta 2 personas</span>
-                        <span><i class="fa fa-wifi mr-1"></i>WiFi</span>
-                        <span><i class="fa fa-tv mr-1"></i>TV 55"</span>
-                    </div>
-                    <div class="flex justify-between items-center">
+                <div style="padding:1rem;">
+                    <div class="section-tag">Habitación</div>
+                    <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;font-weight:300;color:#1A3A5C;margin:0 0 .375rem;">Matrimonial</h3>
+                    <p style="font-size:.75rem;color:rgba(26,58,92,.55);margin:0 0 .75rem;">King size · Vista ciudad · Pisos 1-10</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
                         <div>
-                            <span class="text-2xl font-bold text-doubletree-navy">S/ 280</span>
-                            <span class="text-gray-400 text-xs">/noche</span>
+                            <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;">S/ 150</span>
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.45);">/noche</span>
                         </div>
-                        <a href="#buscador"
-                           class="bg-doubletree-navy text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-900 transition">
-                            Ver más
-                        </a>
+                        <a href="#buscador" style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:#1A3A5C;color:#fff;padding:.4rem .875rem;border-radius:6px;text-decoration:none;">Ver más</a>
                     </div>
                 </div>
             </div>
 
             {{-- Doble --}}
-            <div class="min-w-[280px] bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex-shrink-0">
-                <div class="bg-teal-700 h-44 flex items-center justify-center relative">
-                    <i class="fa fa-bed text-6xl text-white opacity-80"></i>
-                    <span class="absolute top-3 right-3 bg-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        Familias
-                    </span>
+            <div class="card-carrusel">
+                <div style="height:160px;overflow:hidden;position:relative;">
+                    <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80"
+                         style="width:100%;height:100%;object-fit:cover;" alt="Doble">
+                    <span style="position:absolute;top:8px;right:8px;font-size:.6rem;font-weight:600;background:#0f6e56;color:#fff;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;">Familias</span>
                 </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-doubletree-navy text-lg">Doble</h3>
-                    <p class="text-gray-500 text-sm mb-3">2 camas dobles · Vista ciudad · Pisos 1-13</p>
-                    <div class="flex items-center gap-3 mb-4 text-xs text-gray-500">
-                        <span><i class="fa fa-users mr-1"></i>Hasta 3 personas</span>
-                        <span><i class="fa fa-wifi mr-1"></i>WiFi</span>
-                        <span><i class="fa fa-snowflake mr-1"></i>A/C</span>
-                    </div>
-                    <div class="flex justify-between items-center">
+                <div style="padding:1rem;">
+                    <div class="section-tag">Habitación</div>
+                    <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;font-weight:300;color:#1A3A5C;margin:0 0 .375rem;">Doble</h3>
+                    <p style="font-size:.75rem;color:rgba(26,58,92,.55);margin:0 0 .75rem;">2 camas · Vista ciudad · Pisos 1-13</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
                         <div>
-                            <span class="text-2xl font-bold text-doubletree-navy">S/ 320</span>
-                            <span class="text-gray-400 text-xs">/noche</span>
+                            <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;">S/ 220</span>
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.45);">/noche</span>
                         </div>
-                        <a href="#buscador"
-                           class="bg-doubletree-navy text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-900 transition">
-                            Ver más
-                        </a>
+                        <a href="#buscador" style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:#1A3A5C;color:#fff;padding:.4rem .875rem;border-radius:6px;text-decoration:none;">Ver más</a>
                     </div>
                 </div>
             </div>
 
             {{-- Suite --}}
-            <div class="min-w-[280px] bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex-shrink-0">
-                <div class="bg-yellow-700 h-44 flex items-center justify-center relative">
-                    <i class="fa fa-star text-6xl text-white opacity-80"></i>
-                    <span class="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        Premium
-                    </span>
+            <div class="card-carrusel">
+                <div style="height:160px;overflow:hidden;position:relative;">
+                    <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=80"
+                         style="width:100%;height:100%;object-fit:cover;" alt="Suite">
+                    <span style="position:absolute;top:8px;right:8px;font-size:.6rem;font-weight:600;background:#b8860b;color:#fff;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;">Premium</span>
                 </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-doubletree-navy text-lg">Suite</h3>
-                    <p class="text-gray-500 text-sm mb-3">Jacuzzi · Vista 360° · Piso 14 exclusivo</p>
-                    <div class="flex items-center gap-3 mb-4 text-xs text-gray-500">
-                        <span><i class="fa fa-users mr-1"></i>Hasta 4 personas</span>
-                        <span><i class="fa fa-bath mr-1"></i>Jacuzzi</span>
-                        <span><i class="fa fa-martini-glass mr-1"></i>Minibar</span>
-                    </div>
-                    <div class="flex justify-between items-center">
+                <div style="padding:1rem;">
+                    <div class="section-tag">Suite de lujo</div>
+                    <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;font-weight:300;color:#1A3A5C;margin:0 0 .375rem;">Suite</h3>
+                    <p style="font-size:.75rem;color:rgba(26,58,92,.55);margin:0 0 .75rem;">Jacuzzi · Vista 360° · Piso 14</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
                         <div>
-                            <span class="text-2xl font-bold text-doubletree-navy">S/ 680</span>
-                            <span class="text-gray-400 text-xs">/noche</span>
+                            <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;">S/ 300</span>
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.45);">/noche</span>
                         </div>
-                        <a href="#buscador"
-                           class="bg-doubletree-navy text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-900 transition">
-                            Ver más
-                        </a>
+                        <a href="#buscador" style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:#1A3A5C;color:#fff;padding:.4rem .875rem;border-radius:6px;text-decoration:none;">Ver más</a>
                     </div>
                 </div>
             </div>
 
-            {{-- Info card --}}
-            <div class="min-w-[280px] bg-doubletree-navy rounded-2xl p-6 flex-shrink-0 flex flex-col justify-between">
-                <div>
-                    <p class="doubletree-gold text-xs font-semibold tracking-widest uppercase mb-3">¿Por qué elegirnos?</p>
-                    <ul class="space-y-3 text-sm text-gray-300">
-                        <li class="flex items-center gap-2"><i class="fa fa-check doubletree-gold"></i>147 habitaciones disponibles</li>
-                        <li class="flex items-center gap-2"><i class="fa fa-check doubletree-gold"></i>14 pisos con vista panorámica</li>
-                        <li class="flex items-center gap-2"><i class="fa fa-check doubletree-gold"></i>11 km del aeropuerto</li>
-                        <li class="flex items-center gap-2"><i class="fa fa-check doubletree-gold"></i>Valoración 9.1/10</li>
-                        <li class="flex items-center gap-2"><i class="fa fa-check doubletree-gold"></i>Pago seguro MercadoPago</li>
-                    </ul>
+            {{-- Card beneficios --}}
+            <div class="card-carrusel" style="background:#1A3A5C;border-color:#1A3A5C;">
+                <div style="padding:1.25rem;height:100%;display:flex;flex-direction:column;justify-content:space-between;min-height:280px;">
+                    <div>
+                        <div style="font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#C9AA71;margin-bottom:1rem;">¿Por qué elegirnos?</div>
+                        <ul style="list-style:none;padding:0;margin:0;space-y:.75rem;">
+                            @foreach(['147 habitaciones disponibles','14 pisos con vista panorámica','11 km del aeropuerto','Valoración 9.1/10','Pago seguro MercadoPago'] as $b)
+                            <li style="display:flex;align-items:center;gap:.625rem;font-size:.8125rem;color:rgba(255,255,255,.65);margin-bottom:.625rem;">
+                                <i class="fa fa-check" style="color:#C9AA71;font-size:10px;flex-shrink:0;"></i>
+                                {{ $b }}
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <a href="#buscador" style="display:block;text-align:center;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;background:#C9AA71;color:#0D2137;padding:.625rem;border-radius:6px;text-decoration:none;margin-top:1rem;">
+                        Reservar ahora
+                    </a>
                 </div>
-                <a href="#buscador"
-                   class="mt-6 bg-doubletree-gold text-white py-2.5 rounded-lg text-sm font-medium text-center hover:bg-yellow-600 transition block">
-                    Reservar ahora
-                </a>
             </div>
         </div>
     </div>
 </div>
 
 {{-- ══ BUSCADOR ══ --}}
-<div id="buscador" class="bg-gray-50 py-12">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-8">
-            <p class="text-doubletree-gold text-xs font-semibold tracking-widest uppercase mb-2">Disponibilidad</p>
-            <h2 class="text-2xl font-bold text-doubletree-navy">Busca tu habitación ideal</h2>
+<div id="buscador" style="background:#F8F5EF;padding:3rem 0;">
+    <div style="max-width:1100px;margin:0 auto;padding:0 1.5rem;">
+
+        <div style="text-align:center;margin-bottom:2rem;">
+            <div class="section-tag">Disponibilidad en tiempo real</div>
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.75rem;font-weight:300;color:#1A3A5C;margin:0;">
+                Busca tu habitación ideal
+            </h2>
         </div>
 
-        {{-- Filtros --}}
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+        {{-- Formulario --}}
+        <div style="background:#fff;border:1px solid rgba(201,170,113,.2);border-radius:12px;padding:1.5rem;margin-bottom:2rem;">
             <form method="GET" action="{{ route('habitaciones.index') }}"
-                  class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                  style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:1rem;align-items:end;">
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    <label style="display:block;font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(26,58,92,.55);margin-bottom:.5rem;">
                         Tipo de habitación
                     </label>
-                    <select name="tipo_id"
-                            class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white">
+                    <select name="tipo_id" class="avail-input">
                         <option value="">Todos los tipos</option>
                         @foreach($tipos as $tipo)
-                            <option value="{{ $tipo->id }}"
-                                {{ request('tipo_id') == $tipo->id ? 'selected' : '' }}>
-                                {{ $tipo->nombre }} — S/ {{ number_format($tipo->precio_noche, 2) }}
+                            <option value="{{ $tipo->id }}" {{ request('tipo_id') == $tipo->id ? 'selected' : '' }}>
+                                {{ $tipo->nombre }} — S/ {{ number_format($tipo->precio_noche,2) }}
                             </option>
                         @endforeach
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                        Fecha ingreso
+                    <label style="display:block;font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(26,58,92,.55);margin-bottom:.5rem;">
+                        Check-in
                     </label>
                     <input type="datetime-local" name="fecha_ingreso"
-                           value="{{ request('fecha_ingreso') }}"
-                           class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                           value="{{ request('fecha_ingreso') }}" class="avail-input">
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                        Fecha salida
+                    <label style="display:block;font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(26,58,92,.55);margin-bottom:.5rem;">
+                        Check-out
                     </label>
                     <input type="datetime-local" name="fecha_salida"
-                           value="{{ request('fecha_salida') }}"
-                           class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                           value="{{ request('fecha_salida') }}" class="avail-input">
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    <label style="display:block;font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(26,58,92,.55);margin-bottom:.5rem;">
                         Huéspedes
                     </label>
-                    <select name="huespedes"
-                            class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white">
-                        <option value="1" {{ request('huespedes',1)==1?'selected':'' }}>1 persona</option>
-                        <option value="2" {{ request('huespedes',1)==2?'selected':'' }}>2 personas</option>
-                        <option value="3" {{ request('huespedes',1)==3?'selected':'' }}>3 personas</option>
-                        <option value="4" {{ request('huespedes',1)==4?'selected':'' }}>4 personas</option>
+                    <select name="huespedes" class="avail-input">
+                        @foreach([1,2,3,4] as $n)
+                        <option value="{{ $n }}" {{ request('huespedes',2)==$n?'selected':'' }}>
+                            {{ $n }} {{ $n==1?'persona':'personas' }}
+                        </option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="flex gap-2">
+
+                <div style="display:flex;gap:.5rem;">
                     <button type="submit"
-                            class="flex-1 bg-doubletree-navy text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-900 transition">
-                        <i class="fa fa-search mr-1"></i>Buscar
+                            style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;background:#1A3A5C;color:#fff;padding:.65rem 1.25rem;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;transition:opacity .2s;"
+                            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        <i class="fa fa-search" style="margin-right:.4rem;color:rgba(201,170,113,.8);"></i>Buscar
                     </button>
                     @if(request()->hasAny(['tipo_id','fecha_ingreso','fecha_salida','huespedes']))
-                        <a href="{{ route('habitaciones.index') }}"
-                           class="bg-gray-100 text-gray-500 px-4 py-2.5 rounded-xl text-sm hover:bg-gray-200 transition">
-                            <i class="fa fa-xmark"></i>
-                        </a>
+                    <a href="{{ route('habitaciones.index') }}"
+                       style="font-size:.65rem;background:#F8F5EF;color:rgba(26,58,92,.6);border:1px solid rgba(201,170,113,.3);padding:.65rem .875rem;border-radius:8px;text-decoration:none;display:flex;align-items:center;">
+                        <i class="fa fa-xmark"></i>
+                    </a>
                     @endif
                 </div>
             </form>
@@ -229,87 +311,104 @@
 
         {{-- Resultados --}}
         @if(request()->hasAny(['tipo_id','fecha_ingreso','fecha_salida','huespedes']))
-            <div class="mb-4 flex items-center justify-between">
-                <p class="text-doubletree-navy font-medium">
-                    <span class="text-2xl font-bold">{{ $habitaciones->count() }}</span>
-                    habitación(es) encontrada(s)
-                </p>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+                <div>
+                    <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2rem;font-weight:300;color:#1A3A5C;">{{ $habitaciones->count() }}</span>
+                    <span style="font-size:.875rem;color:rgba(26,58,92,.6);margin-left:.375rem;">habitación(es) disponible(s)</span>
+                </div>
             </div>
 
             @if($habitaciones->isEmpty())
-                <div class="bg-white rounded-2xl p-10 text-center shadow-sm">
-                    <i class="fa fa-bed text-5xl text-gray-200 mb-4"></i>
-                    <p class="text-gray-500 font-medium">No hay habitaciones disponibles con esos filtros.</p>
-                    <a href="{{ route('habitaciones.index') }}"
-                       class="text-doubletree-gold text-sm underline mt-2 inline-block">
-                        Limpiar filtros
-                    </a>
-                </div>
+            <div style="background:#fff;border:1px dashed rgba(201,170,113,.4);border-radius:12px;padding:3.5rem;text-align:center;">
+                <i class="fa fa-bed" style="font-size:2.5rem;color:rgba(201,170,113,.35);display:block;margin-bottom:1rem;"></i>
+                <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;margin:0 0 .5rem;">Sin disponibilidad para esas fechas</p>
+                <p style="font-size:.8125rem;color:rgba(26,58,92,.55);margin:0 0 1.25rem;">Prueba con otras fechas o un tipo diferente.</p>
+                <a href="{{ route('habitaciones.index') }}"
+                   style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;background:#1A3A5C;color:#fff;padding:.625rem 1.5rem;border-radius:8px;text-decoration:none;">
+                    Limpiar filtros
+                </a>
+            </div>
+
             @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($habitaciones as $hab)
-                        @php
-                            $colores = ['Matrimonial'=>'bg-doubletree-navy','Doble'=>'bg-teal-700','Suite'=>'bg-yellow-700'];
-                            $color   = $colores[$hab->tipo->nombre] ?? 'bg-gray-600';
-                        @endphp
-                        <div class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden border border-gray-100">
-                            <div class="{{ $color }} h-36 flex items-center justify-center relative">
-                                <i class="fa fa-bed text-5xl text-white opacity-70"></i>
-                                <span class="absolute top-3 left-3 bg-green-400 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                    Disponible
-                                </span>
-                                <span class="absolute top-3 right-3 bg-black/30 text-white text-xs px-2 py-1 rounded-full">
-                                    Piso {{ $hab->piso }}
-                                </span>
-                            </div>
-                            <div class="p-5">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 class="font-bold text-doubletree-navy text-lg">
-                                            Hab. {{ $hab->numero }}
-                                        </h3>
-                                        <p class="text-gray-400 text-sm">{{ $hab->tipo->nombre }}</p>
-                                    </div>
-                                </div>
-                                <p class="text-gray-500 text-sm mb-3 line-clamp-2">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;">
+                @foreach($habitaciones as $hab)
+                @php
+                    $imgs = [
+                        'Matrimonial' => 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80',
+                        'Doble'       => 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80',
+                        'Suite'       => 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=80',
+                    ];
+                    $img = $imgs[$hab->tipo->nombre] ?? $imgs['Matrimonial'];
+                @endphp
+                <div class="hab-card">
+                    <div class="hab-card-img">
+                        <img src="{{ $img }}" alt="{{ $hab->tipo->nombre }}">
+                        <span class="badge-disponible">Disponible</span>
+                        <span class="badge-piso">Piso {{ $hab->piso }}</span>
+                        <span class="badge-tipo">{{ $hab->tipo->nombre }}</span>
+                    </div>
+                    <div style="padding:1.125rem;">
+                        <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:.625rem;">
+                            <div>
+                                <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;font-weight:300;color:#1A3A5C;margin:0 0 .2rem;">
+                                    Habitación {{ $hab->numero }}
+                                </h3>
+                                <p style="font-size:.75rem;color:rgba(26,58,92,.5);margin:0;">
                                     {{ $hab->tipo->descripcion }}
                                 </p>
-                                <div class="flex items-center gap-3 text-xs text-gray-400 mb-4">
-                                    <span><i class="fa fa-users mr-1"></i>Hasta {{ $hab->tipo->capacidad }} personas</span>
-                                    <span><i class="fa fa-wifi mr-1"></i>WiFi</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <span class="text-xl font-bold text-doubletree-navy">
-                                            S/ {{ number_format($hab->tipo->precio_noche, 2) }}
-                                        </span>
-                                        <span class="text-gray-400 text-xs">/noche</span>
-                                    </div>
-                                    <a href="{{ route('reservas.create', ['habitacion_id' => $hab->id, 'fecha_ingreso' => request('fecha_ingreso'), 'fecha_salida' => request('fecha_salida')]) }}"
-                                       class="bg-doubletree-gold text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition">
-                                        Reservar
-                                    </a>
-                                </div>
                             </div>
                         </div>
-                    @endforeach
+                        <div style="display:flex;gap:1rem;margin-bottom:.875rem;">
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.55);display:flex;align-items:center;gap:.3rem;">
+                                <i class="fa fa-users" style="color:#C9AA71;font-size:10px;"></i>
+                                Hasta {{ $hab->tipo->capacidad }} pers.
+                            </span>
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.55);display:flex;align-items:center;gap:.3rem;">
+                                <i class="fa fa-wifi" style="color:#C9AA71;font-size:10px;"></i>WiFi
+                            </span>
+                            <span style="font-size:.7rem;color:rgba(26,58,92,.55);display:flex;align-items:center;gap:.3rem;">
+                                <i class="fa fa-snowflake" style="color:#C9AA71;font-size:10px;"></i>A/C
+                            </span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(201,170,113,.15);padding-top:.875rem;">
+                            <div>
+                                <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;">
+                                    S/ {{ number_format($hab->tipo->precio_noche,2) }}
+                                </span>
+                                <span style="font-size:.7rem;color:rgba(26,58,92,.45);">/noche</span>
+                            </div>
+                            <a href="{{ route('reservas.create', ['habitacion_id'=>$hab->id,'fecha_ingreso'=>request('fecha_ingreso'),'fecha_salida'=>request('fecha_salida')]) }}"
+                               style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;background:#C9AA71;color:#0D2137;padding:.5rem 1rem;border-radius:6px;text-decoration:none;transition:opacity .2s;"
+                               onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                                Reservar
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            @endif
-        @else
-            {{-- Sin búsqueda activa --}}
-            <div class="bg-white rounded-2xl p-10 text-center shadow-sm border border-dashed border-gray-200">
-                <i class="fa fa-magnifying-glass text-4xl text-gray-200 mb-4"></i>
-                <p class="text-gray-500 font-medium">Usa los filtros para buscar habitaciones disponibles</p>
-                <p class="text-gray-400 text-sm mt-1">Selecciona tipo, fechas y número de huéspedes</p>
+                @endforeach
             </div>
+            @endif
+
+        @else
+        {{-- Sin búsqueda --}}
+        <div style="background:#fff;border:1px dashed rgba(201,170,113,.3);border-radius:12px;padding:3.5rem;text-align:center;">
+            <i class="fa fa-magnifying-glass" style="font-size:2.5rem;color:rgba(201,170,113,.35);display:block;margin-bottom:1rem;"></i>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.375rem;font-weight:300;color:#1A3A5C;margin:0 0 .375rem;">
+                Elige tus fechas para ver disponibilidad
+            </p>
+            <p style="font-size:.8125rem;color:rgba(26,58,92,.55);margin:0;">
+                Selecciona tipo, fechas y número de huéspedes
+            </p>
+        </div>
         @endif
+
     </div>
 </div>
 
 <script>
-function scrollCarrusel(dir) {
-    const c = document.getElementById('carrusel');
-    c.scrollBy({ left: dir * 300, behavior: 'smooth' });
+function scrollC(dir) {
+    document.getElementById('carrusel').scrollBy({ left: dir * 280, behavior: 'smooth' });
 }
 </script>
 

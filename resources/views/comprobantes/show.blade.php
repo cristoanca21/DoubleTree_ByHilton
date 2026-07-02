@@ -8,7 +8,7 @@
         {{-- Encabezado --}}
         <div class="bg-doubletree-navy px-8 py-6 flex items-center justify-between">
             <div>
-                <h1 class="text-white font-bold text-xl">Comprobante de Pago</h1>
+                <h1 class="text-black font-bold text-xl">Comprobante de Pago</h1>
                 <p class="text-gray-300 text-sm mt-1">{{ $comprobante->numero_boleta }}</p>
             </div>
             <div class="text-right">
@@ -26,7 +26,7 @@
             <div>
                 <p class="font-bold text-doubletree-navy">DoubleTree by Hilton Trujillo</p>
                 <p class="text-gray-500 text-sm">Av. El Golf 591, Trujillo, Perú</p>
-                <p class="text-gray-500 text-sm">RUC: 20123456789</p>
+                <p class="text-gray-500 text-sm">RUC: 20396900719</p>
             </div>
             <i class="fa fa-hotel text-4xl doubletree-gold opacity-60"></i>
         </div>
