@@ -285,7 +285,7 @@ html { scroll-behavior: smooth; }
                 <div style="margin-top: .625rem;">
                     @foreach([
                         ['fa-location-dot','Av. El Golf 591, Trujillo'],
-                        ['fa-star','4 Estrellas · Valoración 9.1'],
+                        ['fa-star','5 Estrellas · Valoración 9.1'],
                         ['fa-plane','11 km del aeropuerto'],
                         ['fa-clock','Recepción 24 horas'],
                         ['fa-wifi','WiFi de alta velocidad'],

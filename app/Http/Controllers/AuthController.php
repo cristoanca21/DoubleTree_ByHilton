@@ -21,12 +21,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credenciales = [
+        if (Auth::guard('cliente')->attempt([
             'email'    => $request->email,
             'password' => $request->password,
-        ];
-
-        if (Auth::guard('cliente')->attempt($credenciales, $request->remember)) {
+        ], $request->remember)) {
             $request->session()->regenerate();
             $cliente = Auth::guard('cliente')->user();
 
@@ -47,34 +45,34 @@ class AuthController extends Controller
     }
 
     public function registro(Request $request)
-{
-    $request->validate([
-        'nombre'         => 'required|string|max:100',
-        'apellido'       => 'required|string|max:100',
-        'email'          => 'required|email|unique:clientes,email',
-        'password'       => 'required|min:8|confirmed',
-        'tipo_documento' => 'required|in:DNI,Pasaporte,Carnet de extranjería',
-        'dni'            => 'required|string|max:20',
-        'telefono'       => 'nullable|string|max:20',
-        'nacionalidad'   => 'required|string|max:100',
-    ]);
+    {
+        $request->validate([
+            'nombre'         => 'required|string|max:100',
+            'apellido'       => 'required|string|max:100',
+            'email'          => 'required|email|unique:clientes,email',
+            'password'       => 'required|min:8|confirmed',
+            'tipo_documento' => 'required|in:DNI,Pasaporte,Carnet de extranjería',
+            'dni'            => 'required|string|max:20',
+            'telefono'       => 'nullable|digits:9',
+            'nacionalidad'   => 'required|string|max:100',
+        ]);
 
-    $cliente = Cliente::create([
-        'nombre'         => $request->nombre,
-        'apellido'       => $request->apellido,
-        'email'          => $request->email,
-        'password' => $request->password,
-        'tipo_documento' => $request->tipo_documento,
-        'dni'            => $request->dni,
-        'telefono'       => $request->telefono,
-        'nacionalidad'   => $request->nacionalidad,
-        'rol'            => 'cliente',
-    ]);
+        $cliente = Cliente::create([
+            'nombre'         => $request->nombre,
+            'apellido'       => $request->apellido,
+            'email'          => $request->email,
+            'password'       => Hash::make($request->password),
+            'tipo_documento' => $request->tipo_documento,
+            'dni'            => $request->dni,
+            'telefono'       => $request->telefono,
+            'nacionalidad'   => $request->nacionalidad,
+            'rol'            => 'cliente',
+        ]);
 
-    Auth::guard('cliente')->login($cliente);
+        Auth::guard('cliente')->login($cliente);
 
-    return redirect()->route('cliente.dashboard');
-}
+        return redirect()->route('cliente.dashboard');
+    }
 
     public function logout(Request $request)
     {

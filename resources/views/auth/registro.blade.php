@@ -242,8 +242,12 @@
                         </label>
                         <div class="relative">
                             <i class="fas fa-phone field-icon"></i>
-                            <input type="tel" name="telefono" value="{{ old('telefono') }}"
-                                   placeholder="987 654 321" autocomplete="tel"
+                            <input type="tel" name="telefono" id="telefono"
+                                   value="{{ old('telefono') }}"
+                                   placeholder="987 654 321"
+                                   autocomplete="tel"
+                                   maxlength="9"
+                                   oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)"
                                    class="field-input {{ $errors->has('telefono') ? 'has-error' : '' }}">
                         </div>
                         @error('telefono')<p class="field-err">{{ $message }}</p>@enderror
