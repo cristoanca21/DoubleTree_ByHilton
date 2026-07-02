@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+    $middleware->validateCsrfTokens(except: [
+        'webhook/mp',
+    ]);
         $middleware->alias([
             'auth.cliente' => \App\Http\Middleware\AuthCliente::class,
             'auth.admin'   => \App\Http\Middleware\AuthAdmin::class,
