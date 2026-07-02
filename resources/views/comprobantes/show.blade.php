@@ -145,7 +145,7 @@
                     <i class="fa fa-arrow-left mr-1"></i>Mis reservas
                 </a>
                 <button onclick="window.print()"
-                        class="bg-doubletree-navy text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-900 transition">
+                        class="bg-doubletree-navy text-blue-400 px-5 py-2 rounded-lg text-sm hover:bg-blue-900 transition">
                     <i class="fa fa-print mr-1"></i>Imprimir
                 </button>
             </div>
